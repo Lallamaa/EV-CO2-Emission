@@ -23,6 +23,25 @@ fetch('dataset.json')
     })
     .catch(error => console.error('Error fetching line chart data:', error));
 
+// Fetch data from area_chart_data.json
+let areaChartData = [];
+fetch('area.json')
+    .then(response => response.json())
+    .then(jsonData => {
+        areaChartData = jsonData;
+    })
+    .catch(error => console.error('Error fetching area chart data:', error));
+
+// Fetch data from weight.json
+let weightData = [];
+fetch('weight.json')
+    .then(response => response.json())
+    .then(data => {
+        weightData = data;
+        //createWeightCO2Chart();
+    })
+    .catch(error => console.error('Error fetching dataset:', error));
+
 // Create logo elements
 function createLogos() {
     const logoContainer = document.getElementById('logo-container');
@@ -42,6 +61,8 @@ function createLogos() {
         img.addEventListener('click', () => {
             displayScatterPlot(brand);
             displayLineChart(brand);
+            displayAreaChart(brand);
+            displayWeightCO2Chart(brand);
         });
     
         // Set margin for the logo
@@ -231,6 +252,190 @@ function createLogos() {
             .attr("fill", "green")
             .style("font-size", "24px");
         }
+function displayAreaChart(brand) {
+    const brandData = areaChartData.filter(d => d.Manufacturer === brand);
+    
+    // Clear previous chart content
+    d3.select("#area-chart").html("");
+    
+    if (brandData.length === 0) {
+        alert(`No data available for ${brand}`);
+        return;
+    }
+    
+    brandData.forEach(d => {
+        d.Year = new Date(d['Model Year'], 0, 1); // Parse model year to date
+        d['Real-World CO2 (g/mi)'] = +d['Real-World CO2 (g/mi)']; // Convert CO2 emissions to number
+    });
+    
+    const chartContainerWidth = document.getElementById("area-chart").getBoundingClientRect().width;
+    
+    const svg = d3.select("#area-chart").append("svg")
+        .attr("width", chartContainerWidth * 0.95) // Adjusted width to occupy 95% of the available space
+        .attr("height", 400);
+    
+    const margin = { top: 20, right: 20, bottom: 50, left: 50 },
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom;
+    
+    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    
+    const x = d3.scaleTime().range([0, width]);
+    const y = d3.scaleLinear().range([height, 0]);
+    
+    x.domain(d3.extent(brandData, d => d.Year));
+    y.domain([0, d3.max(brandData, d => d['Real-World CO2 (g/mi)'])]);
+    
+    const nestedData = d3.group(brandData, d => d['Vehicle Type']);
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    
+    const area = d3.area()
+        .x(d => x(d.Year))
+        .y0(height)
+        .y1(d => y(d['Real-World CO2 (g/mi)']));
+    
+    // Add the tooltip div
+    const tooltip = d3.select("#area-chart")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+    
+    // Append paths for each area
+    nestedData.forEach((values, key) => {
+        g.append("path")
+            .datum(values)
+            .attr("fill", color(key))
+            .attr("d", area)
+            .attr("opacity", 0.7)
+            .on("mouseover", function (event, d) {
+                const [mx, my] = d3.pointer(event);
+                const yearScale = x.invert(mx);
+                const closestData = values.reduce((a, b) => Math.abs(b.Year - yearScale) < Math.abs(a.Year - yearScale) ? b : a);
+    
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.9);
+                        
+                tooltip.style("display", "block")
+                    .html(`Vehicle Type: ${key}<br>Model Year: ${closestData['Model Year']}<br>Real-World CO2: ${closestData['Real-World CO2 (g/mi)']}`)
+                    .style("left", `${event.pageX + 10}px`)
+                    .style("top", `${event.pageY - 10}px`);
+        
+                hoverLine.style("display", "block")
+                    .attr("x1", mx)
+                    .attr("x2", mx)
+                    .attr("y1", 0)
+                    .attr("y2", height);
+    
+                tooltip.html(`Vehicle Type: ${key}<br>Model Year: ${closestData['Model Year']}<br>Real-World CO2: ${closestData['Real-World CO2 (g/mi)']}`)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mousemove", function (event) {
+                tooltip.style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                tooltip.style("display", "none");
+                hoverLine.style("display", "none");
+                tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+    
+            g.selectAll(".dot")
+                .data(values)
+                .enter().append("circle")
+                .attr("class", "dot")
+                .attr("cx", d => x(d.Year))
+                .attr("cy", d => y(d['Real-World CO2 (g/mi)']))
+                .attr("r", 3)
+                .attr("fill", color(key))
+                .on("mouseover", function(event, d) {
+                    tooltip.style("display", "block")
+                        .html(`Vehicle Type: ${key}<br>Model Year: ${d['Model Year']}<br>Real-World CO2: ${d['Real-World CO2 (g/mi)']}`)
+                        .style("left", `${event.pageX + 10}px`)
+                        .style("top", `${event.pageY - 10}px`);
+                })
+                .on("mouseout", () => tooltip.style("display", "none"));
+    });
+    
+    // Add the X Axis
+    g.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x));
+    
+    // Add the Y Axis
+    g.append("g")
+        .call(d3.axisLeft(y));
+    
+    // Add chart title
+    g.append("text")
+        .attr("x", width / 2)
+        .attr("y", -5)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "16px")
+        .attr("font-weight", "bold")
+        .text(`${brand} CO2 Emissions Distribution by Model Year`);
+
+    // Add legend
+    //const legend = svg.append("g")
+    //    .attr("class", "legend")
+    //    .attr("transform", `translate(${width + margin.right - 20},${margin.top})`);
+
+    //const legendEntries = Array.from(nestedData.keys());
+
+    //legendEntries.forEach((key, index) => {
+    //    const legendRow = legend.append("g")
+    //        .attr("transform", `translate(0,${index * 20})`);
+
+    //    legendRow.append("rect")
+    //        .attr("width", 10)
+    //        .attr("height", 10)
+    //        .attr("fill", color(key));
+
+    //    legendRow.append("text")
+    //        .attr("x", -10)
+    //        .attr("y", 10)
+    //        .attr("text-anchor", "end")
+    //        .style("text-transform", "capitalize")
+    //        .text(key);
+    //});
+}
+
+function displayWeightCO2Chart(brand) {
+    const brandData = weightData.filter(d => d.Manufacturer === brand);
+
+    if (brandData.length === 0) {
+        alert(`No data available for ${brand}`);
+        return;
+    }
+
+    const weights = brandData.map(d => d['Weight (lbs)']);
+    const co2_emissions = brandData.map(d => d['Real-World CO2 (g/mi)']);
+
+    const trace = {
+        x: weights,
+        y: co2_emissions,
+        mode: 'markers',
+        type: 'scatter',
+        marker: {
+            size: 12,
+            color: 'blue', // You can customize the color here
+            opacity: 0.7
+        },
+        text: brandData.map(d => `${brand}<br>Weight: ${d['Weight (lbs)']} lbs<br>CO2 Emissions: ${d['Real-World CO2 (g/mi)']} g/mi`),
+        hoverinfo: 'text'
+    };
+
+    const layout = {
+        title: `${brand} Weight vs Real-World CO2`,
+        xaxis: { title: 'Weight (lbs)' },
+        yaxis: { title: 'Real-World CO2 (g/mi)' }
+    };
+
+    Plotly.newPlot('weight-chart', [trace], layout);
+}
         
         
         
