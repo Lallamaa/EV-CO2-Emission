@@ -22,13 +22,12 @@
             justify-content: space-between;
             align-items: flex-start;
         }
-        #plot {
-            width: 50%;
+        .plot, .chart, .area-chart, .weight {
+            width: 48%; /* Adjust width to take half of the available space */
             height: 400px;
-        }
-        .chart {
-            width: 50%; /* Adjust width */
-            height: 400px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-bottom: 10px;
         }
         .tooltip {
             background-color: white;
@@ -44,8 +43,12 @@
         <!-- Logos will be dynamically inserted here -->
     </div>
     <div class="charts-container">
-        <div id="plot"></div>
+        <div class="plot" id="plot"></div>
         <div class="chart" id="chart"></div>
+    </div>
+    <div class="charts-container">
+        <div class="area-chart" id="area-chart"></div>
+        <div class="weight" id="weight-chart"></div> <!-- chart changed to weight -->
     </div>
     <script src="script.js"></script>
 </body>
