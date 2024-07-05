@@ -6,39 +6,42 @@ const brands = [
 
 // Fetch data from horsepower.json
 let horsepowerData = [];
-fetch('src/json/horsepower.json')
+fetch('horsepower.json')
     .then(response => response.json())
     .then(jsonData => {
         horsepowerData = jsonData;
         createLogos();
+        displayScatterPlot('BMW'); // Display BMW scatter plot by default
     })
     .catch(error => console.error('Error fetching horsepower data:', error));
 
 // Fetch data from dataset.json
 let lineChartData = [];
-fetch('src/json/dataset.json')
+fetch('dataset.json')
     .then(response => response.json())
     .then(jsonData => {
         lineChartData = jsonData;
+        displayLineChart('BMW'); // Display BMW line chart by default
     })
     .catch(error => console.error('Error fetching line chart data:', error));
 
 // Fetch data from area_chart_data.json
 let areaChartData = [];
-fetch('src/json/area.json')
+fetch('area.json')
     .then(response => response.json())
     .then(jsonData => {
         areaChartData = jsonData;
+        displayAreaChart('BMW'); // Display BMW area chart by default
     })
     .catch(error => console.error('Error fetching area chart data:', error));
 
 // Fetch data from weight.json
 let weightData = [];
-fetch('src/json/weight.json')
+fetch('weight.json')
     .then(response => response.json())
     .then(data => {
         weightData = data;
-        //createWeightCO2Chart();
+        displayWeightCO2Chart('BMW'); // Display BMW weight vs CO2 chart by default
     })
     .catch(error => console.error('Error fetching dataset:', error));
 
@@ -48,21 +51,28 @@ function createLogos() {
     const numLogos = brands.length;
     const containerWidth = logoContainer.offsetWidth;
     const totalMargin = containerWidth - (123 * numLogos); // Assuming each logo has a width of 100px
-    
 
     // Calculate margin between logos
     const margin = totalMargin / (numLogos + 1);
     
     brands.forEach((brand, index) => {
         const img = document.createElement('img');
-        img.src = `src/img/${brand.toLowerCase()}.png`; // Adjusted path for images
+        img.src = `${brand.toLowerCase()}.png`; // Ensure you have the images stored in the same directory as your HTML file
         img.alt = brand;
         img.className = 'logo';
+        if (brand === 'BMW') {
+            img.classList.add('selected'); // Add class to indicate BMW is selected by default
+        }
         img.addEventListener('click', () => {
             displayScatterPlot(brand);
             displayLineChart(brand);
             displayAreaChart(brand);
             displayWeightCO2Chart(brand);
+
+            // Remove 'selected' class from all logos
+            document.querySelectorAll('.logo').forEach(logo => logo.classList.remove('selected'));
+            // Add 'selected' class to the clicked logo
+            img.classList.add('selected');
         });
     
         // Set margin for the logo
@@ -72,7 +82,7 @@ function createLogos() {
         // Add the logo to the container
         logoContainer.appendChild(img);
     });
-    }
+}
 
     function displayScatterPlot(brand) {
         const brandData = horsepowerData.filter(d => d.Manufacturer === brand);
