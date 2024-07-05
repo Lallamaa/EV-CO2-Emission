@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Sales Visualization</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+
+    <!-- Bootstrap Carousel -->
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <!-- Add more indicators if needed -->
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <!-- EV Sales Visualization -->
+                <div class="container">
+                    <!-- Banner -->
+                    <div id="banner">
+                        <h1>EV Sales Visualization</h1>
+                    </div>
+
+                    <!-- Filters -->
+                    <div id="filters">
+                        <div>
+                            <label for="year">Select Year: </label>
+                            <input type="range" id="year" min="2010" max="2023" step="1">
+                            <span id="yearValue">2010</span>
+                        </div>
+                        <div id="powertrain-filter">
+                            <label>Select Powertrain: </label>
+                            <input type="radio" id="all" name="powertrain" value="All" checked>
+                            <label for="all">All</label>
+                            <input type="radio" id="bev" name="powertrain" value="BEV">
+                            <label for="bev">BEV</label>
+                            <input type="radio" id="phev" name="powertrain" value="PHEV">
+                            <label for="phev">PHEV</label>
+                            <input type="radio" id="fcev" name="powertrain" value="FCEV">
+                            <label for="fcev">FCEV</label>
+                        </div>
+                    </div>
+
+                    <!-- Map Container -->
+                    <div id="map-container">
+                        <div id="map"></div>
+                    </div>
+
+                    <!-- Banner -->
+                    <div id="banner-mid">
+                        <h4>Growth of Electrical Vehical (EV) usage around the world</h4>
+                        <!-- <p>Explore Electric Vehicle Sales Data</p> -->
+                    </div>
+                    
+
+                    <!-- Bar Chart Container -->
+                    <div id="barchart-container">
+                        <div id="barchart"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Add more carousel items if needed -->
+        </div>
+    </div>
+
+    <script src="src/js/app.js"></script>
+</body>
+</html>

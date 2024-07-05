@@ -6,7 +6,7 @@ const brands = [
 
 // Fetch data from horsepower.json
 let horsepowerData = [];
-fetch('horsepower.json')
+fetch('src/json/horsepower.json')
     .then(response => response.json())
     .then(jsonData => {
         horsepowerData = jsonData;
@@ -16,7 +16,7 @@ fetch('horsepower.json')
 
 // Fetch data from dataset.json
 let lineChartData = [];
-fetch('dataset.json')
+fetch('src/json/dataset.json')
     .then(response => response.json())
     .then(jsonData => {
         lineChartData = jsonData;
@@ -25,7 +25,7 @@ fetch('dataset.json')
 
 // Fetch data from area_chart_data.json
 let areaChartData = [];
-fetch('area.json')
+fetch('src/json/area.json')
     .then(response => response.json())
     .then(jsonData => {
         areaChartData = jsonData;
@@ -34,7 +34,7 @@ fetch('area.json')
 
 // Fetch data from weight.json
 let weightData = [];
-fetch('weight.json')
+fetch('src/json/weight.json')
     .then(response => response.json())
     .then(data => {
         weightData = data;
@@ -55,7 +55,7 @@ function createLogos() {
     
     brands.forEach((brand, index) => {
         const img = document.createElement('img');
-        img.src = `${brand.toLowerCase()}.png`; // Ensure you have the images stored in the same directory as your HTML file
+        img.src = `src/img/${brand.toLowerCase()}.png`; // Adjusted path for images
         img.alt = brand;
         img.className = 'logo';
         img.addEventListener('click', () => {
@@ -436,6 +436,4 @@ function displayWeightCO2Chart(brand) {
 
     Plotly.newPlot('weight-chart', [trace], layout);
 }
-        
-        
-        
+
