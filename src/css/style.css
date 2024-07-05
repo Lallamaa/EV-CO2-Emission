@@ -93,8 +93,10 @@ body {
 .logo {
   margin: 10px;
   cursor: pointer;
-  width: 100px; /* Adjust as needed */
+  width: auto; /* Adjust as needed */
   height: 100px; /* Adjust as needed */
+  /* margin-left: 5px !important;
+  margin-right: 5px !important; */
 }
 .charts-container {
   display: flex;
@@ -114,4 +116,15 @@ body {
   padding: 5px;
   position: absolute;
   display: none;
+}
+.container-custom {
+  /* max-width: 70vh; */
+  width: 100%;
+  /* padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto; */
+}
+.page{ 
+  width: 100%;
 }

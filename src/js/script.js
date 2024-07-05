@@ -11,6 +11,7 @@ fetch('src/json/horsepower.json')
     .then(jsonData => {
         horsepowerData = jsonData;
         createLogos();
+        displayScatterPlot('BMW'); // Display BMW scatter plot by default
     })
     .catch(error => console.error('Error fetching horsepower data:', error));
 
@@ -20,6 +21,7 @@ fetch('src/json/dataset.json')
     .then(response => response.json())
     .then(jsonData => {
         lineChartData = jsonData;
+        displayLineChart('BMW'); // Display BMW line chart by default
     })
     .catch(error => console.error('Error fetching line chart data:', error));
 
@@ -29,6 +31,7 @@ fetch('src/json/area.json')
     .then(response => response.json())
     .then(jsonData => {
         areaChartData = jsonData;
+        displayAreaChart('BMW'); // Display BMW area chart by default
     })
     .catch(error => console.error('Error fetching area chart data:', error));
 
@@ -38,6 +41,7 @@ fetch('src/json/weight.json')
     .then(response => response.json())
     .then(data => {
         weightData = data;
+        displayWeightCO2Chart('BMW'); // Display BMW weight vs CO2 chart by default
         //createWeightCO2Chart();
     })
     .catch(error => console.error('Error fetching dataset:', error));
