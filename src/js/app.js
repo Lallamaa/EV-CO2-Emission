@@ -1,8 +1,9 @@
 // Load external data using Promises
 Promise.all([
     d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"),
-    d3.csv("../../EVsales.csv")
+    d3.csv("EVsales.csv")
 ]).then(([dataGeo, data]) => {
+    console.log('Data loaded:', data);
     // Process data
     data.forEach(d => {
         d.year = +d.year;
